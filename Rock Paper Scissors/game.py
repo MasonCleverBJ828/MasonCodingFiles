@@ -1,64 +1,39 @@
-from player import Player
-from role import Role
+import random
 
+name = input('Enter your name: ')
+print('Hello,', name)
 
-class LastPencil:
-    def __init__(self,
-                 participants: dict[str: Player],
-                 possible_values: tuple[str, str, str]) -> None:
-        self.participants = participants
-        self.possible_values = possible_values
-        self.pencils: int = self.__set_pencils()
-        self.current_player: Player = self.__set_player()
+options = {
+    entity: ind
+    for ind, entity
+    in enumerate((input() or 'scissors,rock,paper').split(','))
+}
 
-    def __set_pencils(self) -> int:
-        pencils: str = input('How many pencils would you like to use: ')
+print("Okay, let's start")
 
-        while not pencils.isnumeric() or not (int(pencils) > 0):
-            print('The number of pencils should be numeric and positive.')
-            pencils = input()
+score_board = {name: 0}
+with open('rating.txt', encoding='U8') as f:
+    for rating in f:
+        nick, score = rating.split()
+        score_board[nick] = int(score)
 
-        return int(pencils)
+while (user := input()) != '!exit':
+    if user == '!rating':
+        print('Your rating:', score_board[name])
+        continue
+    if user not in options:
+        print('Invalid input')
+        continue
 
-    def __set_player(self) -> Player:
-        player_names: str = ', '.join(self.participants)
-        current_player: str = input(f'Who will be the first ({player_names}): ')
+    pc = random.choice(list(options))
 
-        while current_player not in self.participants:
-            print(f'Choose between {player_names}.')
-            current_player = input()
+    if user == pc:
+        print(f'There is a draw ({user})')
+        score_board[name] += 50
+    elif (options[pc] - options[user]) % len(options) > len(options) // 2:
+        print(f'Well done. The pc chose {pc} and failed')
+        score_board[name] += 100
+    else:
+        print(f'Sorry, but the computer chose {pc}')
 
-        return self.participants[current_player]
-
-    def __swap_player(self) -> None:
-        self.current_player = [
-            self.participants[player]
-            for player in self.participants
-            if self.participants[player].name != self.current_player.name
-        ][0]
-
-    def __print_state(self) -> None:
-        print('|' * self.pencils)
-        print(f"{self.current_player.name}'s turn: ")
-
-    def play(self) -> None:
-        while self.pencils:
-            self.__print_state()
-            self.current_player.move(self)
-            self.__swap_player()
-
-        print(f'{self.current_player.name} won!')
-
-
-if __name__ == '__main__':
-    names: tuple[str, str] = 'Elon', 'Dylan'
-    roles: tuple[Role, Role] = Role.PLAYER, Role.BOT
-    players: dict[str: Player] = {
-        name: Player(name, role)
-        for name, role in zip(names, roles)
-    }
-
-    possible_takes: tuple[str, str, str] = '1', '2', '3'
-
-    game: LastPencil = LastPencil(players, possible_takes)
-    game.play()
+print('Bye!')
