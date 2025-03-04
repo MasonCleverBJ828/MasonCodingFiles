@@ -6,7 +6,6 @@ Learn more at https://hyperskill.org/projects/97
 Here's the link to the project: https://hyperskill.org/projects/97
 
 Check out my profile: https://hyperskill.org/my-learning/620351274
-
 Hello! My name is Aid.
 I was created in 2020.
 Please, remind me your name.
